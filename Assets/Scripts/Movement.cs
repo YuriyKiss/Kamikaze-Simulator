@@ -21,7 +21,7 @@ public class Movement : MonoBehaviour
 
     private void Update()
     {
-        if (Input.TouchCount > 0)
+        if (Input.TouchCount > 0 && PlayerPrefs.GetInt("InGame") == 1)
         {
             Touch touch = Input.GetTouch(0);
 

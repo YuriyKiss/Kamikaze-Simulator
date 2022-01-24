@@ -8,71 +8,125 @@ public class CameraMovement : MonoBehaviour
     private float topHeight;
     [SerializeField]
     private float bottomHeight;
+    [SerializeField]
+    private float leftMin;
+    [SerializeField]
+    private float rightMax;
 
-    private Vector3 topCameraPosition;
-    private Vector3 bottomCameraPosition;
+    private Vector3 finalCameraPosition;
 
     private float smoothTime = 1.5f;
     private float cameraMovementSmoothingTime = 0.25f;
-    private float oneThird = 1f / 3f;
+    private float twoFifth = 2f / 5f;
     private Vector2 playerViewportPosition;
 
     private bool cameraMovesUpwards = false;
     private bool cameraMovesDownwards = false;
+    private bool cameraMovesLeft = false;
+    private bool cameraMovesRight = false;
 
-    private float timer = 0f;
+    private float timerX = 0f;
+    private float timerY = 0f;
 
     private void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
-
-        topCameraPosition = new Vector3(transform.position.x, topHeight, transform.position.z);
-        bottomCameraPosition = new Vector3(transform.position.x, bottomHeight, transform.position.z);
     }
 
     private void FixedUpdate()
     {
         playerViewportPosition = Camera.main.WorldToViewportPoint(player.transform.position);
 
-        if (playerViewportPosition.y > 1 - oneThird)
+        finalCameraPosition = transform.position;
+
+        if (playerViewportPosition.y > 1 - twoFifth)
         {
             cameraMovesUpwards = true;
             cameraMovesDownwards = false;
 
-            ClearTimer();
+            ClearTimerY();
         }
-        else if (playerViewportPosition.y < oneThird)
+        else if (playerViewportPosition.y < twoFifth)
         {
             cameraMovesDownwards = true;
             cameraMovesUpwards = false;
 
-            ClearTimer();
+            ClearTimerY();
         }
         else
         {
-            timer += Time.deltaTime;
+            timerY += Time.deltaTime;
 
-            if (timer > cameraMovementSmoothingTime)
+            if (timerY > cameraMovementSmoothingTime)
             {
                 cameraMovesUpwards = false;
                 cameraMovesDownwards = false;
             }
         }
 
+        if (playerViewportPosition.x > 1 - twoFifth)
+        {
+            cameraMovesRight = true;
+            cameraMovesLeft = false;
+
+            ClearTimerX();
+        }
+        else if (playerViewportPosition.x < twoFifth)
+        {
+            cameraMovesLeft = true;
+            cameraMovesRight = false;
+
+            ClearTimerX();
+        }
+        else
+        {
+            timerX += Time.deltaTime;
+
+            if (timerX > cameraMovementSmoothingTime)
+            {
+                cameraMovesLeft = false;
+                cameraMovesRight = false;
+            }
+        }
+
         if (cameraMovesUpwards)
         {
-            transform.position = Vector3.Lerp(transform.position, topCameraPosition, 
-                                              smoothTime * Time.deltaTime);
+            finalCameraPosition.y = topHeight;
         }
         else if (cameraMovesDownwards)
         {
-            transform.position = Vector3.Lerp(transform.position, bottomCameraPosition, 
-                                              smoothTime * Time.deltaTime);
+            finalCameraPosition.y = bottomHeight;
         }
+
+        if (cameraMovesLeft)
+        {
+            finalCameraPosition.x = leftMin;
+        }
+        else if (cameraMovesRight)
+        {
+            finalCameraPosition.x = rightMax;
+        }
+
+        transform.position = Vector3.Lerp(transform.position, finalCameraPosition,
+                                              smoothTime * Time.deltaTime);
     }
 
-    private void ClearTimer()
+    private void ClearTimerY()
     {
-        timer = 0f;
+        timerY = 0f;
+    }
+    private void ClearTimerX()
+    {
+        timerX = 0f;
+    }
+
+    public void UpdateLimits(float top, float bottom, float left, float right, float smooth)
+    {
+        topHeight = top;
+        bottomHeight = bottom;
+        leftMin = left;
+        rightMax = right;
+
+        smoothTime = smooth;
     }
 }
