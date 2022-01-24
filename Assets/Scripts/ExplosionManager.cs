@@ -6,7 +6,8 @@ using MoreMountains.Feedbacks;
 
 public class ExplosionManager : MonoBehaviour
 {
-    private MMFeedbacks feedback;
+    [SerializeField]
+    private MMFeedbacks shakeFeedback;
 
     private Movement playerMovement;
     private Vector2 explosionForce = new Vector2(0, 840f);
@@ -30,13 +31,11 @@ public class ExplosionManager : MonoBehaviour
     {
         bomb = GetComponent<RayfireBomb>();
         playerMovement = GetComponent<Movement>();
-
-        feedback = GameObject.FindGameObjectWithTag("Feedbacks").GetComponent<MMFeedbacks>();
     }
 
     public void DetonateBomb()
     {
-        feedback.PlayFeedbacks();
+        shakeFeedback.PlayFeedbacks();
         bomb.Explode(bombDelay);
         explosion.Play();
         ApplyDecals();
