@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 using MoreMountains.Feedbacks;
 
@@ -16,6 +17,14 @@ public class EndGameConditions : MonoBehaviour
     private PuppetController puppet;
 
     private GameObject[] zones;
+
+    private float winMenuTimeDelay = 0.5f;
+
+    private float newUpValue = 11f;
+    private float newBottomValue = 0.25f;
+    private float newLeftValue = -1.25f;
+    private float newRightValue = 1.25f;
+    private float newSmoothingValue = 1.1f;
 
     private void Start()
     {
@@ -42,22 +51,24 @@ public class EndGameConditions : MonoBehaviour
 
         if (allZonesAreDestroyed)
         {
-            PlayerPrefs.SetInt("InGame", 0);
-
-            zoomFeedback.PlayFeedbacks();
-
-            cam.UpdateLimits(11f, 0.25f, -1.25f, 1.25f, 1.1f);
-
-            StartCoroutine(puppet.SetPuppetAlive(ActivateMenu));
-
-            InGameMenu.SetActive(false);
-
-            
+            StartCoroutine(FinishGame());
         }
     }
 
-    private void ActivateMenu()
+    private IEnumerator FinishGame()
     {
+        PlayerPrefs.SetInt("InGame", 0);
+
+        zoomFeedback.PlayFeedbacks();
+
+        cam.UpdateLimits(newUpValue, newBottomValue, newLeftValue, newRightValue, newSmoothingValue);
+
+        InGameMenu.SetActive(false);
+
+        yield return StartCoroutine(puppet.SetPuppetAlive());
+
+        yield return new WaitForSeconds(winMenuTimeDelay);
+
         WinMenu.SetActive(true);
     }
 }
