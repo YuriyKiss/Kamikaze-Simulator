@@ -12,10 +12,15 @@ public class PuppetController : MonoBehaviour
     private PuppetMaster puppet;
     private Animator anim;
 
+    private Vector3 rayDirection = Vector3.down;
+    private float floorMaxDistance = 0.5f;
+    private int floorLayerMask = 1 << 0;
+
     private float timer = 0f;
     private bool targetStanding = false;
     private string danceAnimation = "Dancing";
     private string idleAnimation = "Standing";
+    private float inactiveTimeForIdle = 1.5f;
 
     private float puppetRessurectionTime = 0.3f;
 
@@ -34,12 +39,14 @@ public class PuppetController : MonoBehaviour
                 timer = 0f;
             }
 
-            if (Physics.Raycast(transform.position, Vector3.down, 0.5f, 1 << 0))
+            Ray ray = new Ray(transform.position, rayDirection);
+
+            if (Physics.Raycast(ray, floorMaxDistance, floorLayerMask))
             {
                 timer += Time.deltaTime;
             }
 
-            if (timer > 1.5f && !targetStanding)
+            if (timer > inactiveTimeForIdle && !targetStanding)
             {
                 targetStanding = true;
 
@@ -49,7 +56,7 @@ public class PuppetController : MonoBehaviour
 
                 anim.Play(idleAnimation);
             }
-            else if (timer <= 1.5f)
+            else if (timer <= inactiveTimeForIdle)
             {
                 targetStanding = false;
 
@@ -62,7 +69,9 @@ public class PuppetController : MonoBehaviour
     {
         yield return new WaitForSeconds(puppetRessurectionTime);
 
-        while (!Physics.Raycast(transform.position, Vector3.down, 0.5f, 1 << 0))
+        Ray ray = new Ray(transform.position, rayDirection);
+
+        while (!Physics.Raycast(ray, floorMaxDistance, floorLayerMask))
             yield return null;
 
         charAnim.SetPosition(transform);

@@ -37,11 +37,11 @@ public class CameraMovement : MonoBehaviour
         desiredCameraPosition = transform.position;
 
         CalculateAxisValue(ref desiredCameraPosition.x, ref cameraMovesRight, ref cameraMovesLeft,
-                           playerViewportPosition.x, ClearTimerX, ref timerX,
+                           playerViewportPosition.x, ref timerX,
                            maxRightPosition, maxLeftPosition);
 
         CalculateAxisValue(ref desiredCameraPosition.y, ref cameraMovesUpwards, ref cameraMovesDownwards,
-                           playerViewportPosition.y, ClearTimerY, ref timerY,
+                           playerViewportPosition.y, ref timerY,
                            maxUpPosition, maxDownPosition);
 
         transform.position = Vector3.Lerp(transform.position, desiredCameraPosition,
@@ -51,8 +51,7 @@ public class CameraMovement : MonoBehaviour
     private void CalculateAxisValue
                               (ref float axisValue, 
                               ref bool axisPositiveMovement, ref bool axisNegativeMovement,
-                              float axisPlayerViewportPosition, 
-                              Action ClearTimer, ref float timer,
+                              float axisPlayerViewportPosition, ref float timer,
                               float maxAxisPositiveValue, float maxAxisNegativeValue)
     {
         if (axisPlayerViewportPosition > 1 - twoFifth)
@@ -60,14 +59,14 @@ public class CameraMovement : MonoBehaviour
             axisPositiveMovement = true;
             axisNegativeMovement = false;
 
-            ClearTimer();
+            timer = 0f;
         }
         else if (axisPlayerViewportPosition < twoFifth)
         {
             axisNegativeMovement = true;
             axisPositiveMovement = false;
 
-            ClearTimer();
+            timer = 0f;
         }
         else
         {
@@ -88,15 +87,6 @@ public class CameraMovement : MonoBehaviour
         {
             axisValue = maxAxisPositiveValue;
         }
-    }
-
-    private void ClearTimerY()
-    {
-        timerY = 0f;
-    }
-    private void ClearTimerX()
-    {
-        timerX = 0f;
     }
 
     public void UpdateLimits(float top, float bottom, float left, float right, float smooth)
