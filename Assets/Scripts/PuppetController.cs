@@ -69,9 +69,7 @@ public class PuppetController : MonoBehaviour
     {
         yield return new WaitForSeconds(puppetRessurectionTime);
 
-        Ray ray = new Ray(transform.position, rayDirection);
-
-        while (!Physics.Raycast(ray, floorMaxDistance, floorLayerMask))
+        while (!Physics.Raycast(transform.position, rayDirection, floorMaxDistance, floorLayerMask))
             yield return null;
 
         charAnim.SetPosition(transform);
