@@ -76,47 +76,40 @@ public class ExplosionManager : MonoBehaviour
 
         float extent = decalMesh.bounds.extents.x;
 
-        float xCoord = 0f;
+        float xMinCoord = -10f, xMaxCoord = 10f;
         for (float i = 0; i <= extent; i += 0.1f)
         {
-            if (RaycastForStripping(decal, direction, ref xCoord, i)) break;
+            if (RaycastForStripping(decal, direction, ref xMaxCoord, i)) break;
         }
-        if (xCoord == 0f)
+        for (float i = 0; i >= -extent; i -= 0.1f)
         {
-            for (float i = 0; i >= -extent; i -= 0.1f)
-            {
-                if (RaycastForStripping(decal, direction, ref xCoord, i)) break;
-            }
+            if (RaycastForStripping(decal, direction, ref xMinCoord, i)) break;
         }
 
         Vector3[] vertices = decalMesh.vertices;
 
         for (int i = 0; i < vertices.Length; ++i)
         {
-            if (xCoord == 0)
+            if (vertices[i].x <= xMinCoord)
             {
-
+                vertices[i] = new Vector3(xMinCoord, vertices[i].y, vertices[i].z);
             }
-            else if (Mathf.Sign(xCoord) == -1 && vertices[i].x <= xCoord)
+            if (vertices[i].x >= xMaxCoord)
             {
-                vertices[i] = new Vector3(xCoord, vertices[i].y, vertices[i].z);
-            }
-            else if (Mathf.Sign(xCoord) == 1 && vertices[i].x >= xCoord)
-            {
-                vertices[i] = new Vector3(xCoord, vertices[i].y, vertices[i].z);
+                vertices[i] = new Vector3(xMaxCoord, vertices[i].y, vertices[i].z);
             }
         }
 
         decalMesh.vertices = vertices;
     }
 
-    private bool RaycastForStripping(GameObject decal, Vector3 direction, ref float xCoord, float i)
+    private bool RaycastForStripping(GameObject decal, Vector3 direction, ref float limitCoord, float i)
     {
         Vector3 transformed = decal.transform.TransformPoint(new Vector3(i, 0, 0));
 
         if (!Physics.Raycast(transformed, direction, decalMinDistance, decalLayerMask))
         {
-            xCoord = i;
+            limitCoord = i;
             return true;
         }
 
