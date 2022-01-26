@@ -4,10 +4,10 @@ using Input = InputWrapper.Input;
 
 public class Movement : MonoBehaviour
 {
+    private Rigidbody rigidb;
+
     [SerializeField]
     private float forceMultiplier;
-
-    private Rigidbody rigidb;
 
     private Vector2 startTouchPosition;
     private Vector2 endTouchPosition;

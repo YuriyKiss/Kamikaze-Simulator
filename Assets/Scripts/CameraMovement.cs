@@ -1,29 +1,26 @@
+using System;
 using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
 {
     private GameObject player;
 
-    [SerializeField]
-    private float topHeight;
-    [SerializeField]
-    private float bottomHeight;
-    [SerializeField]
-    private float leftMin;
-    [SerializeField]
-    private float rightMax;
-
-    private Vector3 finalCameraPosition;
-
-    private float smoothTime = 1.5f;
-    private float cameraMovementSmoothingTime = 0.25f;
-    private float twoFifth = 2f / 5f;
-    private Vector2 playerViewportPosition;
+    private float maxUpPosition = 9f;
+    private float maxDownPosition = 0.25f;
+    private float maxLeftPosition = 0f;
+    private float maxRightPosition = 0f;
 
     private bool cameraMovesUpwards = false;
     private bool cameraMovesDownwards = false;
     private bool cameraMovesLeft = false;
     private bool cameraMovesRight = false;
+
+    private Vector2 playerViewportPosition;
+    private Vector3 desiredCameraPosition;
+
+    private float cameraMovementSmoothingTime = 0.25f;
+    private float cameraSmoothing = 1.5f;
+    private float twoFifth = 2f / 5f;
 
     private float timerX = 0f;
     private float timerY = 0f;
@@ -37,78 +34,60 @@ public class CameraMovement : MonoBehaviour
     {
         playerViewportPosition = Camera.main.WorldToViewportPoint(player.transform.position);
 
-        finalCameraPosition = transform.position;
+        desiredCameraPosition = transform.position;
 
-        if (playerViewportPosition.y > 1 - twoFifth)
+        CalculateAxisValue(ref desiredCameraPosition.x, ref cameraMovesRight, ref cameraMovesLeft,
+                           playerViewportPosition.x, ClearTimerX, ref timerX,
+                           maxRightPosition, maxLeftPosition);
+
+        CalculateAxisValue(ref desiredCameraPosition.y, ref cameraMovesUpwards, ref cameraMovesDownwards,
+                           playerViewportPosition.y, ClearTimerY, ref timerY,
+                           maxUpPosition, maxDownPosition);
+
+        transform.position = Vector3.Lerp(transform.position, desiredCameraPosition,
+                                              cameraSmoothing * Time.deltaTime);
+    }
+
+    private void CalculateAxisValue
+                              (ref float axisValue, 
+                              ref bool axisPositiveMovement, ref bool axisNegativeMovement,
+                              float axisPlayerViewportPosition, 
+                              Action ClearTimer, ref float timer,
+                              float maxAxisPositiveValue, float maxAxisNegativeValue)
+    {
+        if (axisPlayerViewportPosition > 1 - twoFifth)
         {
-            cameraMovesUpwards = true;
-            cameraMovesDownwards = false;
+            axisPositiveMovement = true;
+            axisNegativeMovement = false;
 
-            ClearTimerY();
+            ClearTimer();
         }
-        else if (playerViewportPosition.y < twoFifth)
+        else if (axisPlayerViewportPosition < twoFifth)
         {
-            cameraMovesDownwards = true;
-            cameraMovesUpwards = false;
+            axisNegativeMovement = true;
+            axisPositiveMovement = false;
 
-            ClearTimerY();
-        }
-        else
-        {
-            timerY += Time.deltaTime;
-
-            if (timerY > cameraMovementSmoothingTime)
-            {
-                cameraMovesUpwards = false;
-                cameraMovesDownwards = false;
-            }
-        }
-
-        if (playerViewportPosition.x > 1 - twoFifth)
-        {
-            cameraMovesRight = true;
-            cameraMovesLeft = false;
-
-            ClearTimerX();
-        }
-        else if (playerViewportPosition.x < twoFifth)
-        {
-            cameraMovesLeft = true;
-            cameraMovesRight = false;
-
-            ClearTimerX();
+            ClearTimer();
         }
         else
         {
-            timerX += Time.deltaTime;
+            timer += Time.deltaTime;
 
-            if (timerX > cameraMovementSmoothingTime)
+            if (timer > cameraMovementSmoothingTime)
             {
-                cameraMovesLeft = false;
-                cameraMovesRight = false;
+                axisNegativeMovement = false;
+                axisPositiveMovement = false;
             }
         }
 
-        if (cameraMovesUpwards)
+        if (axisNegativeMovement)
         {
-            finalCameraPosition.y = topHeight;
+            axisValue = maxAxisNegativeValue;
         }
-        else if (cameraMovesDownwards)
+        else if (axisPositiveMovement)
         {
-            finalCameraPosition.y = bottomHeight;
+            axisValue = maxAxisPositiveValue;
         }
-
-        if (cameraMovesLeft)
-        {
-            finalCameraPosition.x = leftMin;
-        }
-        else if (cameraMovesRight)
-        {
-            finalCameraPosition.x = rightMax;
-        }
-
-        transform.position = Vector3.Lerp(transform.position, finalCameraPosition,
-                                              smoothTime * Time.deltaTime);
     }
 
     private void ClearTimerY()
@@ -122,11 +101,11 @@ public class CameraMovement : MonoBehaviour
 
     public void UpdateLimits(float top, float bottom, float left, float right, float smooth)
     {
-        topHeight = top;
-        bottomHeight = bottom;
-        leftMin = left;
-        rightMax = right;
+        maxUpPosition = top;
+        maxDownPosition = bottom;
+        maxLeftPosition = left;
+        maxRightPosition = right;
 
-        smoothTime = smooth;
+        cameraSmoothing = smooth;
     }
 }

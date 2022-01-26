@@ -7,28 +7,26 @@ using RootMotion.Dynamics;
 public class PuppetController : MonoBehaviour
 {
     [SerializeField]
-    private UpdateCurrentPosition charAnim;
+    private AnimatedCharacterController charAnim;
 
     private PuppetMaster puppet;
+
+    private float puppetRessurectionTime = 0.3f;
 
     private void Start()
     {
         puppet = GetComponentInParent<PuppetMaster>();
     }
 
-    public IEnumerator SetPuppetAlive(Action callback)
+    public IEnumerator SetPuppetAlive()
     {
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(puppetRessurectionTime);
 
-        while (GetComponent<Rigidbody>().velocity.y > 0.001f)
+        while (!Physics.Raycast(transform.position, Vector3.down, 0.5f, 1 << 0))
             yield return null;
 
-        charAnim.SetAnimatorCharacter(transform);
+        charAnim.SetPosition(transform);
 
         puppet.state = PuppetMaster.State.Alive;
-
-        yield return new WaitForSeconds(0.5f);
-
-        callback.Invoke();
     }
 }
