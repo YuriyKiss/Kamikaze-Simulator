@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.Animations;
 
 using RootMotion.Dynamics;
 
@@ -11,6 +12,8 @@ public class EnemyController : MonoBehaviour
     private Animator anim;
     private PuppetMaster puppet;
     private SkinnedMeshRenderer rend;
+    private PositionConstraint constraintPos;
+    private RotationConstraint constraintRot;
 
     private GameObject player;
     private PuppetController playerPuppet;
@@ -23,6 +26,8 @@ public class EnemyController : MonoBehaviour
         anim = GetComponentInChildren<Animator>();
         puppet = GetComponentInChildren<PuppetMaster>();
         rend = GetComponentInChildren<SkinnedMeshRenderer>();
+        constraintPos = GetComponentInChildren<PositionConstraint>();
+        constraintRot = GetComponentInChildren<RotationConstraint>();
 
         player = GameObject.FindGameObjectWithTag("Player");
         playerPuppet = player.GetComponent<PuppetController>();
@@ -31,7 +36,7 @@ public class EnemyController : MonoBehaviour
 
     private void Update()
     {
-        if (Vector3.Distance(transform.position, player.transform.position) < 1.5f
+        if (Vector3.Distance(transform.position, player.transform.position) < 2f
             && transform.position.y - 0.6f < player.transform.position.y)
         {
             if (!kicking)
@@ -40,17 +45,15 @@ public class EnemyController : MonoBehaviour
                 StartCoroutine(KickPlayer());
             }
         }
-        else
-        {
-            if (anim.isActiveAndEnabled)
-                anim.Play("Boxing Idle");
-        }
     }
 
     private IEnumerator KickPlayer()
     {
+        constraintPos.constraintActive = true;
+        constraintRot.constraintActive = true;
+
         anim.Play("Boxing");
-        yield return new WaitForSeconds(0.75f);
+        yield return new WaitForSeconds(0.1f);
 
         if (this.enabled && Vector3.Distance(transform.position, player.transform.position) < 1.5f
             && transform.position.y - 0.6f < player.transform.position.y)
@@ -58,10 +61,12 @@ public class EnemyController : MonoBehaviour
             playerPuppet.KnockoutPuppet();
             playerMovement.ApplyForceToPlayer(new Vector2(600f, 600f), 40f);
 
-            yield return new WaitForSeconds(1.5f);
+            yield return new WaitForSeconds(1.133f);
         }
 
-        anim.Play("Boxing Idle");
+        constraintPos.constraintActive = false;
+        constraintRot.constraintActive = false;
+
         kicking = false;
     }
 

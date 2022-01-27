@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 48d0d0f2b4d2e9f4d90dcd2b0862c34e
+guid: e694b6e27fe9430419348729a3fbaa9a
 ModelImporter:
   serializedVersion: 20200
   internalIDToNameTable:
@@ -41,8 +41,8 @@ ModelImporter:
       name: Boxing
       takeName: mixamo.com
       internalID: 0
-      firstFrame: 13
-      lastFrame: 43
+      firstFrame: 10
+      lastFrame: 44
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
