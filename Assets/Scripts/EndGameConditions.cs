@@ -65,7 +65,7 @@ public class EndGameConditions : MonoBehaviour
 
         InGameMenu.SetActive(false);
 
-        yield return StartCoroutine(puppet.SetPuppetAlive());
+        yield return StartCoroutine(puppet.SetPuppetDancing());
 
         yield return new WaitForSeconds(winMenuTimeDelay);
 

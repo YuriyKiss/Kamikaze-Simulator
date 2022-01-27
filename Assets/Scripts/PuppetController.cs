@@ -58,14 +58,12 @@ public class PuppetController : MonoBehaviour
             }
             else if (timer <= inactiveTimeForIdle)
             {
-                targetStanding = false;
-
-                puppet.state = PuppetMaster.State.Dead;
+                KnockoutPuppet();
             }
         }
     }
 
-    public IEnumerator SetPuppetAlive()
+    public IEnumerator SetPuppetDancing()
     {
         yield return new WaitForSeconds(puppetRessurectionTime);
 
@@ -77,5 +75,14 @@ public class PuppetController : MonoBehaviour
         puppet.state = PuppetMaster.State.Alive;
 
         anim.Play(danceAnimation);
+    }
+
+    public void KnockoutPuppet()
+    {
+        timer = 0f;
+
+        targetStanding = false;
+
+        puppet.state = PuppetMaster.State.Dead;
     }
 }
