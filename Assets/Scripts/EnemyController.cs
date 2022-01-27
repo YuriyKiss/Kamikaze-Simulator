@@ -58,6 +58,7 @@ public class EnemyController : MonoBehaviour
         if (this.enabled && Vector3.Distance(transform.position, player.transform.position) < 1.5f
             && transform.position.y - 0.6f < player.transform.position.y)
         {
+            playerPuppet.ClearTimer();
             playerPuppet.KnockoutPuppet();
             playerMovement.ApplyForceToPlayer(new Vector2(600f, 600f), 40f);
 

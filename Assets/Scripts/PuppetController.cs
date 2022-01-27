@@ -77,10 +77,13 @@ public class PuppetController : MonoBehaviour
         anim.Play(danceAnimation);
     }
 
-    public void KnockoutPuppet()
+    public void ClearTimer()
     {
         timer = 0f;
+    }
 
+    public void KnockoutPuppet()
+    {
         targetStanding = false;
 
         puppet.state = PuppetMaster.State.Dead;
