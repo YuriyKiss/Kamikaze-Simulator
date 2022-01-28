@@ -3,27 +3,30 @@ using UnityEngine;
 public class DetonateButton : MonoBehaviour
 {
     private EndGameConditions endGame;
+    private PlayerExplosion playerExplosion;
 
     private GameObject[] zones;
-    private GameObject player;
 
-    private Animator anim;
+    private Animator animator;
     private string pulsingAnimation = "Pulsing";
 
     private void OnEnable()
     {
-        endGame = GameObject.FindGameObjectWithTag("Scripts").GetComponent<EndGameConditions>();
+        GameObject scriptsRoot = GameObject.FindGameObjectWithTag("Scripts");
+        endGame = scriptsRoot.GetComponent<EndGameConditions>();
+
+        GameObject playerRoot = GameObject.FindGameObjectWithTag("Player");
+        PlayerManager playerManager = playerRoot.GetComponent<PlayerManager>();
+        playerExplosion = playerManager.playerExplosion;
 
         zones = GameObject.FindGameObjectsWithTag("X Zone");
 
-        player = GameObject.FindGameObjectWithTag("Player");
-
-        anim = GetComponent<Animator>();
+        animator = GetComponent<Animator>();
     }
 
     public void ActivateExplosion()
     {
-        anim.Play(pulsingAnimation);
+        animator.Play(pulsingAnimation);
 
         foreach (GameObject zone in zones)
         {
@@ -44,6 +47,6 @@ public class DetonateButton : MonoBehaviour
             }
         }
 
-        player.GetComponent<ExplosionManager>().DetonateBomb();
+        playerExplosion.DetonateBomb();
     }
 }
