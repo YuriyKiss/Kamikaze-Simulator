@@ -1,9 +1,12 @@
-using System;
 using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
 {
-    private GameObject player;
+    private Camera gameCamera;
+    private Transform characterTransform;
+
+    private Vector2 playerViewportPosition;
+    private Vector3 desiredCameraPosition;
 
     private float maxUpPosition = 9f;
     private float maxDownPosition = 0.25f;
@@ -15,9 +18,6 @@ public class CameraMovement : MonoBehaviour
     private bool cameraMovesLeft = false;
     private bool cameraMovesRight = false;
 
-    private Vector2 playerViewportPosition;
-    private Vector3 desiredCameraPosition;
-
     private float cameraMovementSmoothingTime = 0.25f;
     private float cameraSmoothing = 1.5f;
     private float twoFifth = 2f / 5f;
@@ -27,12 +27,20 @@ public class CameraMovement : MonoBehaviour
 
     private void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player");
+        GameObject cameraRoot = GameObject.FindGameObjectWithTag("MainCamera");
+        CameraManager cameraManager = cameraRoot.GetComponent<CameraManager>();
+
+        gameCamera = cameraManager.GameCamera.GetComponent<Camera>();
+
+        GameObject playerRoot = GameObject.FindGameObjectWithTag("Player");
+        PlayerManager playerManager = playerRoot.GetComponent<PlayerManager>();
+
+        characterTransform = playerManager.playerTransform;
     }
 
     private void FixedUpdate()
     {
-        playerViewportPosition = Camera.main.WorldToViewportPoint(player.transform.position);
+        playerViewportPosition = gameCamera.WorldToViewportPoint(characterTransform.position);
 
         desiredCameraPosition = transform.position;
 
@@ -56,17 +64,17 @@ public class CameraMovement : MonoBehaviour
     {
         if (axisPlayerViewportPosition > 1 - twoFifth)
         {
+            timer = 0f;
+
             axisPositiveMovement = true;
             axisNegativeMovement = false;
-
-            timer = 0f;
         }
         else if (axisPlayerViewportPosition < twoFifth)
         {
+            timer = 0f;
+
             axisNegativeMovement = true;
             axisPositiveMovement = false;
-
-            timer = 0f;
         }
         else
         {
