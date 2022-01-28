@@ -5,16 +5,11 @@ using MoreMountains.Feedbacks;
 
 public class EndGameConditions : MonoBehaviour
 {
-    [SerializeField]
-    private MMFeedbacks zoomFeedback;
-    [SerializeField]
-    private CameraMovement cam;
-    [SerializeField]
-    private GameObject InGameMenu;
-    [SerializeField]
-    private GameObject WinMenu;
+    private CanvasManager canvasManager;
 
-    private PuppetController puppet;
+    private MMFeedbacks feedbackZoom;
+    private CameraMovement cameraMovement;
+    private PlayerPuppet playerPuppet;
 
     private GameObject[] zones;
 
@@ -26,49 +21,55 @@ public class EndGameConditions : MonoBehaviour
     private float newRightValue = 1.25f;
     private float newSmoothingValue = 1.1f;
 
+    private void Awake()
+    {
+        PlayerPrefs.SetInt("InGame", 1);
+    }
+
     private void Start()
     {
+        GameObject canvasRoot = GameObject.FindGameObjectWithTag("Canvas");
+        canvasManager = canvasRoot.GetComponent<CanvasManager>();
+
+        GameObject feedbacksRoot = GameObject.FindGameObjectWithTag("Feedbacks");
+        FeedbacksManager feedbacksManager = feedbacksRoot.GetComponent<FeedbacksManager>();
+        feedbackZoom = feedbacksManager.feedbackZoom;
+
+        GameObject cameraRoot = GameObject.FindGameObjectWithTag("MainCamera");
+        CameraManager cameraManager = cameraRoot.GetComponent<CameraManager>();
+        cameraMovement = cameraManager.cameraMovement;
+
+        GameObject playerRoot = GameObject.FindGameObjectWithTag("Player");
+        PlayerManager playerManager = playerRoot.GetComponent<PlayerManager>();
+        playerPuppet = playerManager.playerPuppet;
+
         zones = GameObject.FindGameObjectsWithTag("X Zone");
-
-        puppet = GameObject.FindGameObjectWithTag("Player").GetComponent<PuppetController>();
-
-        PlayerPrefs.SetInt("InGame", 1);
     }
 
     public void CheckCondition()
     {
-        bool allZonesAreDestroyed = true;
-
         foreach (GameObject zone in zones)
-        {
             if (zone != null)
-            {
-                allZonesAreDestroyed = false;
+                return;
 
-                break;
-            }
-        }
-
-        if (allZonesAreDestroyed)
-        {
-            StartCoroutine(FinishGame());
-        }
+        StartCoroutine(FinishGame());
     }
 
     private IEnumerator FinishGame()
     {
         PlayerPrefs.SetInt("InGame", 0);
 
-        zoomFeedback.PlayFeedbacks();
+        feedbackZoom.PlayFeedbacks();
 
-        cam.UpdateLimits(newUpValue, newBottomValue, newLeftValue, newRightValue, newSmoothingValue);
+        cameraMovement.UpdateLimits(newUpValue, newBottomValue, newLeftValue, 
+                                        newRightValue, newSmoothingValue);
 
-        InGameMenu.SetActive(false);
+        canvasManager.InGameMenu.SetActive(false);
 
-        yield return StartCoroutine(puppet.SetPuppetDancing());
+        yield return StartCoroutine(playerPuppet.SetPuppetDancing());
 
         yield return new WaitForSeconds(winMenuTimeDelay);
 
-        WinMenu.SetActive(true);
+        canvasManager.WinMenu.SetActive(true);
     }
 }

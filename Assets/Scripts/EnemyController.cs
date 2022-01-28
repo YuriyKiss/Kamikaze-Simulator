@@ -9,17 +9,28 @@ public class EnemyController : MonoBehaviour
     [SerializeField]
     private Material deadMaterial;
 
+    [SerializeField]
+    private ParticleSystem kickEffect;
+
     private Animator anim;
     private PuppetMaster puppet;
     private SkinnedMeshRenderer rend;
     private PositionConstraint constraintPos;
     private RotationConstraint constraintRot;
 
-    private GameObject player;
-    private PuppetController playerPuppet;
-    private Movement playerMovement;
+    private Transform playerTransform;
+    private PlayerPuppet playerPuppet;
+    private PlayerMovement playerMovement;
 
     private bool kicking = false;
+
+    private Vector2 playerPunchVector = new Vector2(600f, 600f);
+
+    private float maxDistanceToKick = 2f;
+    private float minHeightOffset = 0.6f;
+    private float kickDelay = 0.1f;
+    private float kickEffectDelay = 0.1f;
+    private float kickAnimationLeftoverTime = 0.933f;
 
     private void Start()
     {
@@ -29,46 +40,56 @@ public class EnemyController : MonoBehaviour
         constraintPos = GetComponentInChildren<PositionConstraint>();
         constraintRot = GetComponentInChildren<RotationConstraint>();
 
-        player = GameObject.FindGameObjectWithTag("Player");
-        playerPuppet = player.GetComponent<PuppetController>();
-        playerMovement = player.GetComponent<Movement>();
+        GameObject playerRoot = GameObject.FindGameObjectWithTag("Player");
+        PlayerManager playerManager = playerRoot.GetComponent<PlayerManager>();
+
+        playerTransform = playerManager.playerTransform;
+        playerPuppet = playerManager.playerPuppet;
+        playerMovement = playerManager.playerMovement;
     }
 
     private void Update()
     {
-        if (Vector3.Distance(transform.position, player.transform.position) < 2f
-            && transform.position.y - 0.6f < player.transform.position.y)
+        float distance = Vector3.Distance(transform.position, playerTransform.position);
+
+        bool distanceCheck = distance < maxDistanceToKick;
+        bool heightCheck = transform.position.y - minHeightOffset < playerTransform.position.y;
+
+        if (distanceCheck && heightCheck && !kicking)
         {
-            if (!kicking)
-            {
-                kicking = true;
-                StartCoroutine(KickPlayer());
-            }
+            StartCoroutine(KickPlayer());
         }
     }
 
     private IEnumerator KickPlayer()
     {
-        constraintPos.constraintActive = true;
-        constraintRot.constraintActive = true;
+        ConstraintsState(true);
 
         anim.Play("Boxing");
-        yield return new WaitForSeconds(0.1f);
+        yield return new WaitForSeconds(kickDelay);
 
-        if (this.enabled && Vector3.Distance(transform.position, player.transform.position) < 1.5f
-            && transform.position.y - 0.6f < player.transform.position.y)
+        if (this.enabled)
         {
-			playerPuppet.ClearTimer();
+            playerPuppet.ClearTimer();
             playerPuppet.KnockoutPuppet();
-            playerMovement.ApplyForceToPlayer(new Vector2(600f, 600f), 40f);
+            playerMovement.ApplyForceToPlayer(playerPunchVector);
 
-            yield return new WaitForSeconds(1.133f);
+            yield return new WaitForSeconds(kickEffectDelay);
+
+            kickEffect.Play();
+
+            yield return new WaitForSeconds(kickAnimationLeftoverTime);
         }
 
-        constraintPos.constraintActive = false;
-        constraintRot.constraintActive = false;
+        ConstraintsState(false);
+    }
 
-        kicking = false;
+    private void ConstraintsState(bool value)
+    {
+        constraintPos.constraintActive = value;
+        constraintRot.constraintActive = value;
+
+        kicking = value;
     }
 
     public void KillEnemy()

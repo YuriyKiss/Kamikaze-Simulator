@@ -8,6 +8,6 @@ public class UpdateCanvasCamera : MonoBehaviour
 
         Canvas canvas = canvasObject.GetComponent<Canvas>();
 
-        canvas.worldCamera = Camera.main;
+        canvas.worldCamera = GetComponent<Camera>();
     }
 }
