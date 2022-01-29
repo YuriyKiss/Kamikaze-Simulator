@@ -4,8 +4,8 @@ using UnityEditor;
 public class GetAnimationClip : MonoBehaviour
 {
 #if UNITY_EDITOR
-    private string loadFrom = "Assets/Animations/Character/Dancing.fbx";
-    private string saveTo = "Assets/Animations/Character/Dancing.anim";
+    private string loadFrom = "Assets/Models/Balloon.fbx";
+    private string saveTo = "Assets/Models/Increasing.anim";
 
     void Start()
     {

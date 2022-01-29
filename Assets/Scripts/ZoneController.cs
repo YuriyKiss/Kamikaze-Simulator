@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections.Generic;
 
 using RayFire;
 
@@ -7,11 +6,18 @@ public class ZoneController : MonoBehaviour
 {
     private bool playerInside = false;
 
-    [SerializeField] 
-    private List<RayfireRigid> destructibles;
+    private RayfireRigid[] destructibles;
+    private EnemyController[] enemies;
+    private GirlController[] girls;
 
-    [SerializeField]
-    private List<EnemyController> enemies;
+    private void Start()
+    {
+        Transform explosionField = transform.parent;
+
+        destructibles = explosionField.GetComponentsInChildren<RayfireRigid>();
+        enemies = explosionField.GetComponentsInChildren<EnemyController>();
+        girls = explosionField.GetComponentsInChildren<GirlController>();
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -43,6 +49,11 @@ public class ZoneController : MonoBehaviour
         foreach (EnemyController enemy in enemies)
         {
             enemy.KillEnemy();
+        }
+
+        foreach (GirlController girl in girls)
+        {
+            girl.ActivateGirl();
         }
     }
 }
