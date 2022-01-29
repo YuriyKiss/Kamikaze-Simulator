@@ -43,7 +43,9 @@ public class PlayerPuppet: MonoBehaviour
 
             Ray ray = new Ray(transform.position, rayDirection);
 
-            if (Physics.Raycast(ray, floorMaxDistance, floorLayerMask))
+            bool raycast = Physics.Raycast(ray, floorMaxDistance, floorLayerMask);
+
+            if (raycast)
             {
                 timer += Time.deltaTime;
             }

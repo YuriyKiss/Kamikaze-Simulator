@@ -31,6 +31,7 @@ public class EnemyController : MonoBehaviour
     private float kickDelay = 0.1f;
     private float kickEffectDelay = 0.1f;
     private float kickAnimationLeftoverTime = 0.933f;
+    private string kickAnimation = "Kicking";
 
     private void Start()
     {
@@ -65,7 +66,7 @@ public class EnemyController : MonoBehaviour
     {
         ConstraintsState(true);
 
-        anim.Play("Boxing");
+        anim.Play(kickAnimation);
         yield return new WaitForSeconds(kickDelay);
 
         if (this.enabled)

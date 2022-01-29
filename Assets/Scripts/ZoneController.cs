@@ -15,7 +15,7 @@ public class ZoneController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.GetComponent<PlayerMovement>() != null)
+        if (other.GetComponent<PlayerExplosion>() != null)
         {
             playerInside = true;
         }
@@ -23,7 +23,7 @@ public class ZoneController : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.GetComponent<PlayerMovement>() != null)
+        if (other.GetComponent<PlayerExplosion>() != null)
         {
             playerInside = false;
         }
