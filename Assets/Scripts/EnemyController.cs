@@ -27,7 +27,7 @@ public class EnemyController : MonoBehaviour
     private Vector2 playerPunchVector = new Vector2(600f, 600f);
 
     private float maxDistanceToKick = 2f;
-    private float minHeightOffset = 0.6f;
+    private float minHeightOffset = 0.55f;
     private float kickDelay = 0.1f;
     private float kickEffectDelay = 0.1f;
     private float kickAnimationLeftoverTime = 0.933f;

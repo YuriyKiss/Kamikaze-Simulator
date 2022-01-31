@@ -3,7 +3,9 @@ guid: 52edebf32987e7c499380d33a88a7dcd
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - balloon: {fileID: 1342189931372127215, guid: 0b371c29e87e53041aa230e2980aaab4, type: 3}
+  - girlNormal: {fileID: 2100000, guid: 198c6b2d17942a14fa8cdbfa2276ae10, type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

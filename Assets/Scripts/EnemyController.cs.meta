@@ -3,7 +3,9 @@ guid: 6c1d439c73f05804e9cf85039891a11d
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - deadMaterial: {fileID: 2100000, guid: bdd14fbfa15b89b40bc81e4c804bc911, type: 2}
+  - kickEffect: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
