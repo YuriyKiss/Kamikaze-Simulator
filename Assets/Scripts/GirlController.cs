@@ -1,57 +1,69 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 using RootMotion.Dynamics;
 
 public class GirlController : MonoBehaviour
 {
-    private PuppetMaster puppet;
-    private BoxCollider boxCollider;
-    private Animator animator;
-    private SkinnedMeshRenderer meshRenderer;
+    [SerializeField]
+    private Material girlNormalMaterial;
+    [SerializeField]
+    private SpriteRenderer spriteToUpdate;
+    [SerializeField]
+    private Sprite spriteExample;
 
-    private float timer = 0f;
-    private float deltaTimeModifier = 0.1f;
-    private Rigidbody[] bones;
-    private GameObject createdBalloon; 
 
     [SerializeField]
     private GameObject balloon;
+    private Rigidbody balloonRigidbody;
 
     [SerializeField]
-    private Material girlNormal;
+    private List<Rigidbody> bones;
+
+    private Animator animator;
+    private PuppetMaster puppet;
+    private SpriteRenderer sprite;
+    private ParticleSystem confetti;
+    private BoxCollider boxCollider;
+    private SkinnedMeshRenderer meshRenderer;
+
+    private float timer = 0f;
+    private float deltaTimeModifier = 0.04f;
+    private float xMovementPerUpdate = 0.01f;
+    private float yMovementPerUpdate = 0.04f;
+    private float targetZPosition = -2f;
+    private float ballonDeviation = -0.11f;
+
+    private string cheerAnimation = "Cheering Idle";
 
     private bool girlActive = false;
     private bool girlSaved = false;
 
-    private string cheerAnimation = "Cheering Idle";
-
     private void Start()
-    {
-        animator = GetComponentInChildren<Animator>();
+    { 
         boxCollider = GetComponent<BoxCollider>();
+        animator = GetComponentInChildren<Animator>();
         puppet = GetComponentInChildren<PuppetMaster>();
+        sprite = GetComponentInChildren<SpriteRenderer>();
+        confetti = GetComponentInChildren<ParticleSystem>();
         meshRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
-
-        bones = GetComponentsInChildren<Rigidbody>();
     }
 
     private void Update()
     {
-        if (createdBalloon != null)
+        if (balloonRigidbody != null)
         {
-            Rigidbody ballonRigid = createdBalloon.GetComponent<Rigidbody>();
+            float x = balloonRigidbody.position.x + Mathf.Sign(balloonRigidbody.position.x) * xMovementPerUpdate;
+            float y = balloonRigidbody.position.y + yMovementPerUpdate;
+            float z = balloonRigidbody.position.z;
 
-            float z = ballonRigid.position.z;
-
-            if (createdBalloon.transform.position.z >= -2f)
+            if (balloonRigidbody.transform.position.z >= targetZPosition)
             {
                 timer += Time.deltaTime * deltaTimeModifier;
-
-                z = Mathf.Lerp(ballonRigid.position.z, -2f, timer);
+                z = Mathf.Lerp(balloonRigidbody.position.z, targetZPosition, timer);
             }
-            float y = ballonRigid.position.y + 0.05f;
 
-            ballonRigid.MovePosition(new Vector3(ballonRigid.position.x, y, z));
+            balloonRigidbody.MovePosition(new Vector3(x, y, z));
         }
     }
 
@@ -61,6 +73,10 @@ public class GirlController : MonoBehaviour
         {
             boxCollider.enabled = false;
 
+            spriteToUpdate.sprite = spriteExample;
+
+            confetti.Play();
+
             ConnectToBalloon();
         }
     }
@@ -69,23 +85,23 @@ public class GirlController : MonoBehaviour
     {
         puppet.state = PuppetMaster.State.Dead;
 
-        // Select random bone
-        Rigidbody bone = bones[Random.Range(0, bones.Length)];
+        Rigidbody bone = bones[Random.Range(0, bones.Count)];
 
-        // Spawn balloon
-        balloon.transform.position = bone.transform.position;
-        createdBalloon = Instantiate(balloon, transform.parent, true);
+        balloon.transform.position = bone.transform.position + ballonDeviation * Vector3.up;
+        GameObject instantiatedBallon = Instantiate(balloon, transform.parent, true);
+        balloonRigidbody = instantiatedBallon.GetComponent<Rigidbody>();
 
-        // Connect girl to balloon
-        FixedJoint joint = bone.gameObject.AddComponent<FixedJoint>();
-        joint.connectedBody = createdBalloon.GetComponent<Rigidbody>();
+        FixedJoint joint = balloonRigidbody.GetComponent<FixedJoint>();
+        joint.connectedBody = bone;
 
         girlSaved = true;
     }
 
     public void ActivateGirl()
     {
-        meshRenderer.material = girlNormal;
+        meshRenderer.material = girlNormalMaterial;
+
+        sprite.enabled = false;
 
         girlActive = true;
 
