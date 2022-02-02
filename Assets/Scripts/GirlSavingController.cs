@@ -14,7 +14,8 @@ public class GirlSavingController : MonoBehaviour
     private GameObject[] girls;
     private GameObject[] trackers;
 
-    private float trackerActivationDelay = 1.5f;
+    private float spritesMargin = 1.25f;
+    private float trackerActivationDelay = 1.25f;
     private float endGameTrackerDelay = 0.75f;
     private string trackerPulsingAnimation = "Pulsing";
 
@@ -38,7 +39,7 @@ public class GirlSavingController : MonoBehaviour
         {
             GameObject tracker = Instantiate(trackerPrefab, InGameMenu.transform, true);
 
-            tracker.transform.position -= Vector3.right * i;
+            tracker.transform.position -= Vector3.right * i * spritesMargin;
 
             trackers[i] = tracker;
         }

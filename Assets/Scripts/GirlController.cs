@@ -30,6 +30,12 @@ public class GirlController : MonoBehaviour
     private bool girlActive = false;
     private bool girlSaved = false;
 
+    // Line Renderer
+    private LineRenderer line;
+
+    private Rigidbody handBone;
+    private Rigidbody balloonsRigid;
+
     private void Start()
     {
         GameObject scripts = GameObject.FindGameObjectWithTag("Scripts");
@@ -41,6 +47,15 @@ public class GirlController : MonoBehaviour
         sprite = GetComponentInChildren<SpriteRenderer>();
         confetti = GetComponentInChildren<ParticleSystem>();
         meshRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
+    }
+
+    private void Update()
+    {
+        if (line != null)
+        {
+            line.SetPosition(0, handBone.position + Vector3.down * 0.05f);
+            line.SetPosition(1, balloonsRigid.position + Vector3.up * 0.3f);
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -68,6 +83,10 @@ public class GirlController : MonoBehaviour
 
         FixedJoint joint = instantiatedBallon.GetComponent<FixedJoint>();
         joint.connectedBody = bone;
+
+        balloonsRigid = instantiatedBallon.GetComponent<Rigidbody>();
+        handBone = bone;
+        line = instantiatedBallon.GetComponent<LineRenderer>();
 
         girlSaved = true;
     }

@@ -3,7 +3,9 @@ guid: 079c163f69092ca4eab171632ad1a216
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - trackerPrefab: {fileID: 1295847862006410192, guid: 3ab5cac944fc46049a7d52c837afff89, type: 3}
+  - newSpriteForTracker: {fileID: 21300000, guid: d78b12e257173024e8ee11cfbb64a96c, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
