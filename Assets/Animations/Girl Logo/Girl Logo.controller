@@ -47,7 +47,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 6123eb1f11c52084d8ecb755231949b7, type: 2}
+  m_Motion: {fileID: 7400000, guid: 459b7d851b6bab144bce8913ae2315da, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -59,7 +59,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Explosion Button Animator
+  m_Name: Girl Logo
   serializedVersion: 5
   m_AnimatorParameters: []
   m_AnimatorLayers:
@@ -86,7 +86,7 @@ AnimatorStateMachine:
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: -5081726686900135033}
-    m_Position: {x: 270, y: 150, z: 0}
+    m_Position: {x: 270, y: 170, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -8996354626058031839}
     m_Position: {x: 30, y: 170, z: 0}

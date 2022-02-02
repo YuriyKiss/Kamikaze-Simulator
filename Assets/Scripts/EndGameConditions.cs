@@ -10,6 +10,7 @@ public class EndGameConditions : MonoBehaviour
     private MMFeedbacks feedbackZoom;
     private CameraMovement cameraMovement;
     private PlayerPuppet playerPuppet;
+    private GirlSavingController girlTracker;
 
     private GameObject[] zones;
 
@@ -43,14 +44,15 @@ public class EndGameConditions : MonoBehaviour
         PlayerManager playerManager = playerRoot.GetComponent<PlayerManager>();
         playerPuppet = playerManager.playerPuppet;
 
+        girlTracker = GetComponent<GirlSavingController>();
+
         zones = GameObject.FindGameObjectsWithTag("X Zone");
     }
 
     public void CheckCondition()
     {
-        foreach (GameObject zone in zones)
-            if (zone != null)
-                return;
+        if (!girlTracker.AreGirlsSaved())
+            return;
 
         StartCoroutine(FinishGame());
     }

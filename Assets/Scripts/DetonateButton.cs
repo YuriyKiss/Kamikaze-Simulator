@@ -38,9 +38,7 @@ public class DetonateButton : MonoBehaviour
                 {
                     controller.ActivateConnectedObjects();
 
-                    DestroyImmediate(zone);
-
-                    endGame.CheckCondition();
+                    Destroy(zone);
 
                     break;
                 }

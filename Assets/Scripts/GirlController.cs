@@ -5,17 +5,13 @@ using RootMotion.Dynamics;
 
 public class GirlController : MonoBehaviour
 {
+    private GirlSavingController tracking;
+
     [SerializeField]
     private Material girlNormalMaterial;
-    [SerializeField]
-    private SpriteRenderer spriteToUpdate;
-    [SerializeField]
-    private Sprite spriteExample;
-
 
     [SerializeField]
     private GameObject balloon;
-    private Rigidbody balloonRigidbody;
 
     [SerializeField]
     private List<Rigidbody> bones;
@@ -27,12 +23,7 @@ public class GirlController : MonoBehaviour
     private BoxCollider boxCollider;
     private SkinnedMeshRenderer meshRenderer;
 
-    private float timer = 0f;
-    private float deltaTimeModifier = 0.04f;
-    private float xMovementPerUpdate = 0.01f;
-    private float yMovementPerUpdate = 0.04f;
-    private float targetZPosition = -2f;
-    private float ballonDeviation = -0.11f;
+    private float ballonDeviation = -0.15f;
 
     private string cheerAnimation = "Cheering Idle";
 
@@ -40,7 +31,10 @@ public class GirlController : MonoBehaviour
     private bool girlSaved = false;
 
     private void Start()
-    { 
+    {
+        GameObject scripts = GameObject.FindGameObjectWithTag("Scripts");
+        tracking = scripts.GetComponent<GirlSavingController>();
+
         boxCollider = GetComponent<BoxCollider>();
         animator = GetComponentInChildren<Animator>();
         puppet = GetComponentInChildren<PuppetMaster>();
@@ -49,31 +43,13 @@ public class GirlController : MonoBehaviour
         meshRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
     }
 
-    private void Update()
-    {
-        if (balloonRigidbody != null)
-        {
-            float x = balloonRigidbody.position.x + Mathf.Sign(balloonRigidbody.position.x) * xMovementPerUpdate;
-            float y = balloonRigidbody.position.y + yMovementPerUpdate;
-            float z = balloonRigidbody.position.z;
-
-            if (balloonRigidbody.transform.position.z >= targetZPosition)
-            {
-                timer += Time.deltaTime * deltaTimeModifier;
-                z = Mathf.Lerp(balloonRigidbody.position.z, targetZPosition, timer);
-            }
-
-            balloonRigidbody.MovePosition(new Vector3(x, y, z));
-        }
-    }
-
     private void OnTriggerEnter(Collider other)
     {
         if (other.GetComponent<PlayerPuppet>() != null && girlActive)
         {
             boxCollider.enabled = false;
 
-            spriteToUpdate.sprite = spriteExample;
+            StartCoroutine(tracking.ActivateTracker());
 
             confetti.Play();
 
@@ -89,9 +65,8 @@ public class GirlController : MonoBehaviour
 
         balloon.transform.position = bone.transform.position + ballonDeviation * Vector3.up;
         GameObject instantiatedBallon = Instantiate(balloon, transform.parent, true);
-        balloonRigidbody = instantiatedBallon.GetComponent<Rigidbody>();
 
-        FixedJoint joint = balloonRigidbody.GetComponent<FixedJoint>();
+        FixedJoint joint = instantiatedBallon.GetComponent<FixedJoint>();
         joint.connectedBody = bone;
 
         girlSaved = true;

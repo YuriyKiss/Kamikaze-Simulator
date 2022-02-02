@@ -11,7 +11,7 @@ public class PlayerPuppet: MonoBehaviour
     private PuppetMaster puppet;
 
     private Vector3 rayDirection = Vector3.down;
-    private float floorMaxDistance = 0.5f;
+    private float floorMaxDistance = 1f;
     private int floorLayerMask = 1 << 0;
 
     private float timer = 0f;
